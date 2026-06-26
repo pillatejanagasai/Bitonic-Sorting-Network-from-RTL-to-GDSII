@@ -49,12 +49,55 @@ Building a 32-element sorter isn't just about logic; it's about physics:
 
 ---
 
+---
+
 ## 📖 The RTL-to-GDSII Visual Journey
 
+The RTL-to-GDSII flow is the "assembly line" of semiconductor manufacturing. It transforms abstract Verilog code into physical metal layers on a silicon chip. Here is how we navigated that transformation:
+
+### 1️⃣ Logic Synthesis (The "Blueprint")
+We use **Yosys** to translate our behavioral Verilog into a netlist—a massive collection of standard logic gates (AND, OR, XOR) available in the Sky130 library.
+<p align="center">
+  <img src="bitonic_sorter_ss/area1.png" width="48%" alt="Synthesis Area 1">
+  <img src="bitonic_sorter_ss/area2.png" width="48%" alt="Synthesis Area 2">
+</p>
+
+### 2️⃣ Floorplanning & Power Delivery (The "Foundation")
+We define the silicon die boundaries and build the Power Delivery Network (PDN). Think of this as the electrical grid of the chip, ensuring every gate receives a stable 1.8V power supply.
+<p align="center">
+  <img src="bitonic_sorter_ss/floorplan.png" width="70%" alt="Floorplan">
+</p>
+
+### 3️⃣ Placement (The "Construction")
+OpenROAD assigns physical coordinates to every standard cell. By setting a **20% placement density**, we strategically left 80% of the silicon empty to allow for the complex wiring required by the Bitonic crossbar.
 <p align="center">
   <img src="bitonic_sorter_ss/placement_1.png" width="48%" alt="Placement 1">
-  <img src="bitonic_sorter_ss/routing.png" width="48%" alt="Routing Complexity">
+  <img src="bitonic_sorter_ss/placement_2.png" width="48%" alt="Placement 2">
 </p>
+
+### 4️⃣ Routing (The "Wiring")
+This is where the magic happens. Using **TritonRoute**, the tool weaves thousands of physical metal paths connecting our 240 logic nodes. The result is a dense, high-performance "butterfly" interconnect.
+<p align="center">
+  <img src="bitonic_sorter_ss/routing.png" width="70%" alt="Routing Complexity">
+</p>
+
+### 5️⃣ Signoff & Manufacturability (The "Quality Inspection")
+Before the design can be etched into silicon, it must pass three final tests:
+* **DRC (Design Rule Check):** Ensures no physical metal layers violate manufacturing spacing rules.
+* **LVS (Layout vs. Schematic):** Confirms the final physical wires match our original logic.
+* **STA (Static Timing Analysis):** Proves the signal propagates fast enough to meet our timing requirements.
+
+<p align="center">
+  <img src="bitonic_sorter_ss/sta.png" width="48%" alt="STA Timing Report">
+  <img src="bitonic_sorter_ss/manufac.png" width="48%" alt="DRC/LVS Report">
+</p>
+
+---
+
+## 🛠️ The Big Picture
+
+
+By completing this flow, we moved from **Idea → Logic → Geometry → Manufacturing Blueprint (GDSII).** This project demonstrates the ability to manage the actual physics of electricity, timing, and spatial congestion—the fundamental skills of a modern Physical Design Engineer.
 
 ### 📊 Key Statistics
 | Metric | Value |
